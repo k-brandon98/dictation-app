@@ -1,7 +1,22 @@
-// types/global.d.ts
 export {};
 
 declare global {
+  type AvailabilityStatus =
+    | "unavailable"
+    | "downloadable"
+    | "downloading"
+    | "available";
+
+  interface SpeechRecognitionAvailabilityOptions {
+    langs: string[];
+    processLocally?: boolean;
+  }
+
+  interface SpeechRecognitionInstallOptions {
+    langs: string[];
+    processLocally?: boolean;
+  }
+
   interface SpeechRecognitionAlternative {
     readonly transcript: string;
     readonly confidence: number;
@@ -30,6 +45,8 @@ declare global {
     continuous: boolean;
     interimResults: boolean;
 
+    processLocally?: boolean;
+
     start(): void;
     stop(): void;
     abort(): void;
@@ -37,16 +54,20 @@ declare global {
     onresult:
       | ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void)
       | null;
-    onerror:
-      | ((this: SpeechRecognition, ev: Event) => void)
-      | null;
+    onerror: ((this: SpeechRecognition, ev: Event) => void) | null;
+    onend: ((this: SpeechRecognition, ev: Event) => void) | null;
   }
 
   interface SpeechRecognitionConstructor {
     new (): SpeechRecognition;
+    available?: (
+      options: SpeechRecognitionAvailabilityOptions,
+    ) => Promise<AvailabilityStatus>;
+    install?: (options: SpeechRecognitionInstallOptions) => Promise<boolean>;
   }
 
-  // Add these two lines:
-  var SpeechRecognition: SpeechRecognitionConstructor | undefined;
-  var webkitSpeechRecognition: SpeechRecognitionConstructor | undefined;
+  interface GlobalThis {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
 }

@@ -55,8 +55,6 @@ export default function Dictation() {
 
   function attachHandlers(recognition: SpeechRecognition) {
     recognition.onresult = (event) => {
-      // Only append NEW, FINAL results to avoid duplicate spam.
-      // event.results is cumulative in continuous mode.
       const chunks: string[] = [];
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -86,8 +84,6 @@ export default function Dictation() {
     };
 
     recognition.onend = () => {
-      // If the user is still in Dictation mode, browsers may end unexpectedly.
-      // We reflect idle status but keep mode as-is (so user can click Start again).
       if (modeRef.current === "Dictation") setStatus("idle");
     };
   }
